@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía OpenCode — Úsame bien, ahorra tokens</title>
+<meta name="description" content="Guía práctica para usar OpenCode de forma óptima: sesiones, subagentes, ahorro de tokens, ficheros de memoria y atajos.">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-soft: #161b22;
+    --bg-card: #1c2330;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #9da7b3;
+    --accent: #58a6ff;
+    --accent-2: #7ee787;
+    --warn: #f0883e;
+    --pink: #ff7b72;
+    --radius: 12px;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: #2d333b;
+    padding: .12em .4em;
+    border-radius: 6px;
+    color: #ffd8a8;
+  }
+  pre {
+    background: #0a0d12;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: .85rem;
+    line-height: 1.55;
+    color: #c9d1d9;
+  }
+  pre code { background: none; padding: 0; color: inherit; }
+
+  /* ---------- Layout ---------- */
+  .layout { display: flex; min-height: 100vh; }
+  nav.sidebar {
+    width: 270px;
+    flex-shrink: 0;
+    background: var(--bg-soft);
+    border-right: 1px solid var(--border);
+    padding: 22px 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  nav.sidebar .brand {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  nav.sidebar .brand span { color: var(--accent-2); }
+  nav.sidebar .tagline { color: var(--muted); font-size: .8rem; margin-bottom: 18px; }
+  nav.sidebar a {
+    display: block;
+    color: var(--muted);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: .9rem;
+    margin-bottom: 2px;
+  }
+  nav.sidebar a:hover, nav.sidebar a.active {
+    background: #21262d;
+    color: var(--text);
+    text-decoration: none;
+  }
+  nav.sidebar .group {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #6e7681;
+    margin: 16px 0 6px;
+    padding-left: 10px;
+  }
+  main {
+    flex: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  header.hero {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 32px;
+  }
+  .hero h1 { font-size: 2rem; margin: 0 0 8px; line-height: 1.25; }
+  .hero h1 em { font-style: normal; color: var(--accent-2); }
+  .hero p { color: var(--muted); margin: 0; max-width: 640px; }
+  .badges { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge {
+    font-size: .75rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+
+  /* ---------- Sections ---------- */
+  section { margin-bottom: 44px; scroll-margin-top: 20px; }
+  h2 {
+    font-size: 1.4rem;
+    margin: 0 0 6px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2 .num {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: .95rem;
+  }
+  h3 { font-size: 1.05rem; margin: 26px 0 8px; color: #fff; }
+  p.lead { color: var(--muted); margin-top: 0; }
+
+  /* ---------- Cards ---------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .card h4 { margin: 0 0 6px; font-size: .95rem; display: flex; gap: 8px; align-items: center; }
+  .card p { margin: 0; font-size: .87rem; color: var(--muted); }
+  .card .kbd-tag { color: var(--accent-2); }
+
+  /* ---------- Tables ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 12px 0; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; }
+  tr:hover td { background: #161b22; }
+  td code { white-space: nowrap; }
+
+  /* ---------- Callouts ---------- */
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: #10192b;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: .9rem;
+  }
+  .callout.tip { border-color: var(--accent-2); background: #0f1d12; }
+  .callout.warn { border-color: var(--warn); background: #1d1509; }
+  .callout strong:first-child { display: block; margin-bottom: 4px; }
+
+  ul.tight { padding-left: 20px; margin: 8px 0; }
+  ul.tight li { margin-bottom: 6px; font-size: .92rem; }
+  ul.tight li strong { color: #fff; }
+
+  /* ---------- Token meter (decorative) ---------- */
+  .meter {
+    height: 10px;
+    background: #21262d;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 8px 0 4px;
+    border: 1px solid var(--border);
+  }
+  .meter > i { display: block; height: 100%; border-radius: 999px; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: .82rem;
+    padding-top: 18px;
+    margin-top: 40px;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 860px) {
+    .layout { flex-direction: column; }
+    nav.sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+    nav.sidebar a { display: inline-block; }
+    main { padding: 28px 18px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="sidebar">
+  <div class="brand">⚡ <span>OpenCode</span> Guía</div>
+  <div class="tagline">Usa el agente al máximo, gasta menos tokens</div>
+
+  <div class="group">Empieza aquí</div>
+  <a href="#intro">1. Cómo funciona</a>
+  <a href="#atajos">2. Atajos esenciales</a>
+
+  <div class="group">Memoria y organización</div>
+  <a href="#sesiones">3. Sesiones (tu memoria)</a>
+  <a href="#ficheros">4. Ficheros que guardan tu trabajo</a>
+  <a href="#instrucciones">5. AGENTS.md y tus reglas</a>
+
+  <div class="group">Ahorro de tokens</div>
+  <a href="#tokens">6. Estrategias de ahorro</a>
+  <a href="#compaction">7. Compacción y contexto</a>
+  <a href="#subagentes">8. Dividir tareas en subagentes</a>
+  <a href="#paralelismo">9. Worktrees y paralelismo</a>
+
+  <div class="group">Productividad</div>
+  <a href="#comandos">10. Comandos y skills</a>
+  <a href="#deshacer">11. Undo, redo y snapshots</a>
+  <a href="#flujo">12. Flujo recomendado</a>
+  <a href="#seguridad">13. Permisos y seguridad</a>
+</nav>
+
+<main>
+
+<header class="hero">
+  <h1>Guía de uso óptimo de <em>OpenCode</em></h1>
+  <p>Todo lo que hace el agente por ti: sesiones que recuerdan tu trabajo, ficheros de memoria,
+     subagentes que dividen tareas para gastar menos tokens, deshacer seguro y atajos para ir rápido.</p>
+  <div class="badges">
+    <span class="badge">📖 Documentación oficial: opencode.ai/docs</span>
+    <span class="badge">🧩 Compatible con GitHub Pages</span>
+    <span class="badge">🗓️ Actualizada: noviembre 2026</span>
+  </div>
+</header>
+
+<!-- ================= 1 ================= -->
+<section id="intro">
+  <h2><span class="num">01</span> Cómo funciona por dentro</h2>
+  <p class="lead">Entender el modelo mental te evita malgastar tokens y tiempo.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h4>🖥️ Cliente + servidor</h4>
+      <p>OpenCode tiene una interfaz (TUI, escritorio o web) y un <strong>servicio en segundo plano</strong> que guarda sesiones, permisos y configuración. Todo lo que haces persiste aunque cierres la terminal.</p>
+    </div>
+    <div class="card">
+      <h4>💬 Sesiones</h4>
+      <p>Cada conversación es una <strong>sesión guardada en disco</strong>. Puedes cerrar, volver mañana y retomar exactamente donde estabas con <code>/sessions</code>.</p>
+    </div>
+    <div class="card">
+      <h4>🤖 Agentes</h4>
+      <p><code>build</code> (por defecto), <code>plan</code> (planifica sin tocar ficheros), y subagentes <code>explore</code> / <code>general</code> para trabajo en segundo plano con contexto propio.</p>
+    </div>
+    <div class="card">
+      <h4>🧠 Contexto = tokens</h4>
+      <p>Cada turno envía el historial al modelo. Menos historial innecesario = <strong>menos tokens, respuestas más rápidas y mejor calidad</strong>.</p>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <strong>💡 Regla de oro</strong>
+    El contexto es como una mesa de trabajo: solo tiene lo que pones encima. Adjunta solo los ficheros
+    relevantes (<code>@fichero</code>), no pegues proyectos enteros.
+  </div>
+</section>
+
+<!-- ================= 2 ================= -->
+<section id="atajos">
+  <h2><span class="num">02</span> Atajos esenciales</h2>
+  <p class="lead">El líder por defecto es <kbd>Ctrl+X</kbd>. Todo con <kbd>Ctrl+P</kbd> abre la paleta de comandos si olvidas algo.</p>
+
+  <table>
+    <thead><tr><th>Atajo</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td><code>/</code></td><td>Lista comandos slash (filtra mientras escribes)</td></tr>
+      <tr><td><code>@</code></td><td>Adjunta un fichero: <code>Revisa @src/auth.ts</code> (acepta rangos: <code>@f.ts#20-45</code>)</td></tr>
+      <tr><td><code>!</code></td><td>Modo shell al inicio del prompt: <code>!git status</code></td></tr>
+      <tr><td><kbd>Enter</kbd> mientras trabaja</td><td>"Piloto" la sesión: corrige el rumbo sin reiniciar</td></tr>
+      <tr><td><kbd>Ctrl+X</kbd> <kbd>N</kbd></td><td>Sesión nueva</td></tr>
+      <tr><td><kbd>Ctrl+X</kbd> <kbd>L</kbd></td><td>Volver a una sesión existente (<code>/sessions</code>)</td></tr>
+      <tr><td><kbd>Ctrl+O</kbd></td><td>Sesiones y proyectos recientes</td></tr>
+      <tr><td><kbd>Ctrl+X</kbd> <kbd>M</kbd> / <kbd>F2</kbd></td><td>Cambiar modelo / ciclar modelos recientes</td></tr>
+      <tr><td><kbd>Shift+Tab</kbd></td><td>Cambiar de agente</td></tr>
+      <tr><td><kbd>Ctrl+X</kbd> <kbd>U</kbd> / <kbd>R</kbd></td><td><code>/undo</code> y <code>/redo</code> (con snapshot de ficheros)</td></tr>
+      <tr><td><kbd>Ctrl+Tab</kbd></td><td>Moverse por las pestañas de sesión</td></tr>
+      <tr><td><kbd>Ctrl+P</kbd></td><td>Paleta de comandos (todas las acciones)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= 3 ================= -->
+<section id="sesiones">
+  <h2><span class="num">03</span> Sesiones: tu memoria persistente</h2>
+  <p class="lead">OpenCode <strong>guarda todo lo que haces</strong> en sesiones. No hace falta repetir contexto.</p>
+
+  <ul class="tight">
+    <li><strong>Retomar trabajo:</strong> <code>/sessions</code> o <kbd>Ctrl+X</kbd><kbd>L</kbd> lista sesiones pasadas con su título; <kbd>Ctrl+O</kbd> muestra proyectos recientes. Entra y sigue como si no hubiera pasado nada.</li>
+    <li><strong>Pestañas:</strong> varias sesiones a la vez con <kbd>Ctrl+Tab</kbd>; cierra con <kbd>Ctrl+X</kbd><kbd>W</kbd> y reabre la última con <kbd>Ctrl+Shift+T</kbd>.</li>
+    <li><strong>Organízalas:</strong> renombra sesiones descriptivas ("Arreglar login OAuth") para encontrarlas luego. Una sesión = una tarea concreta.</li>
+    <li><strong>Lo pendiente vive en el prompt:</strong> si dejas trabajo a medias, pide al agente que deje un resumen de <em>qué falta</em>; ese resumen queda guardado en la sesión y en los resúmenes de compacción.</li>
+  </ul>
+
+  <div class="callout">
+    <strong>⚡ Para ahorrar tokens: no reuses una sesión para otra cosa</strong>
+    Una sesión con 40 mensajes de otra temática arrastra contexto inútil en cada turno.
+    <strong>Termina la tarea → <kbd>Ctrl+X</kbd><kbd>N</kbd> sesión nueva.</strong>
+    Si necesitas lo anterior, retómala luego con <code>/sessions</code>: así ambas gastan solo lo suyo.
+  </div>
+
+  <h3>Sub-preguntas sin contaminar: <code>/btw</code></h3>
+  <pre><code>/btw ¿por qué falló el test del paso 2?</code></pre>
+  <p>Pregunta rápida que usa el contexto actual pero <strong>no se añade a la conversación</strong>: no ensucia el historial ni gasta tokens en futuros turnos. La respuesta se abre en un diálogo.</p>
+</section>
+
+<!-- ================= 4 ================= -->
+<section id="ficheros">
+  <h2><span class="num">04</span> Ficheros que guardan lo que haces o tienes pendiente</h2>
+  <p class="lead">Esto es lo que hace que OpenCode "recuerde" entre sesiones. Todo son ficheros en tu repo o en tu configuración global.</p>
+
+  <table>
+    <thead><tr><th>Fichero</th><th>Qué guarda</th><th>Dónde</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>AGENTS.md</code></td>
+        <td><strong>Tus reglas permanentes</strong>: comandos de build, convenciones, "no toques X", verificaciones obligatorias. Se carga en cada sesión.</td>
+        <td>Raíz del proyecto (y carpetas anidadas), o <code>~/.config/opencode/AGENTS.md</code></td>
+      </tr>
+      <tr>
+        <td><code>.opencode/commands/*.md</code></td>
+        <td><strong>Prompts guardados</strong> que se vuelven comandos <code>/review</code>, <code>/deploy</code>… con <code>$ARGUMENTS</code>.</td>
+        <td>Proyecto o <code>~/.config/opencode/commands/</code></td>
+      </tr>
+      <tr>
+        <td><code>.opencode/skills/&lt;id&gt;/SKILL.md</code></td>
+        <td><strong>Flujos de trabajo reutilizables</strong> con scripts y referencias. El agente los carga solo cuando toca.</td>
+        <td>Proyecto o <code>~/.config/opencode/skills/</code></td>
+      </tr>
+      <tr>
+        <td><code>.opencode/agents/*.md</code></td>
+        <td><strong>Agentes personalizados</strong> (revisor, generador de tests…) con su propio prompt y permisos.</td>
+        <td>Proyecto o <code>~/.config/opencode/agents/</code></td>
+      </tr>
+      <tr>
+        <td><code>opencode.json(c)</code></td>
+        <td>Modelo por defecto, permisos, MCP, compacción, referencias, comandos…</td>
+        <td>Raíz del proyecto o <code>~/.config/opencode/</code></td>
+      </tr>
+      <tr>
+        <td>Sesiones y snapshots</td>
+        <td><strong>Historial completo</strong> de conversaciones + copias de ficheros para deshacer.</td>
+        <td>Directorio de datos de OpenCode (automático)</td>
+      </tr>
+      <tr>
+        <td>Resúmenes de compacción</td>
+        <td><strong>Objetivo, decisiones, trabajo hecho y próximos pasos</strong> de sesiones largas — exactamente "lo que llevas y lo que falta".</td>
+        <td>Se generan solos al compactar</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <strong>💡 Consejo</strong>
+    Sube <code>AGENTS.md</code>, <code>.opencode/commands/</code> y <code>.opencode/skills/</code> a tu repo:
+    cada sesión nueva arranca con tus reglas sin tener que repetirlas (ahorro de tokens en <em>cada</em> turno).
+  </div>
+</section>
+
+<!-- ================= 5 ================= -->
+<section id="instrucciones">
+  <h2><span class="num">05</span> AGENTS.md: di tus reglas una vez</h2>
+  <p class="lead">En lugar de escribir en cada sesión "usa bun, sigue el estilo X, no toques Y", decláralo una vez.</p>
+
+<pre><code># AGENTS.md
+- Tratar siempre a los ficheros como sensibles
+- Ejecutar `bun typecheck` tras cambiar TypeScript
+- Consultas de base de datos solo en src/database/
+- No editar ficheros generados; tocar el formato con el formatter
+- Responder en español</code></pre>
+
+  <ul class="tight">
+    <li><strong>Alcance jerárquico:</strong> se cargan el global (<code>~/.config/opencode/AGENTS.md</code>) + los de la raíz hacia abajo. Lo general arriba, lo específico cerca del código.</li>
+    <li><strong>En caliente:</strong> si editas <code>AGENTS.md</code> con la sesión abierta, OpenCode lo detecta y aplica el cambio en el siguiente turno. No hace falta reiniciar.</li>
+    <li><strong>Compatibilidad:</strong> si no hay <code>AGENTS.md</code>, se lee <code>CLAUDE.md</code> (los agentes que también usan Claude Code comparten reglas así).</li>
+  </ul>
+</section>
+
+<!-- ================= 6 ================= -->
+<section id="tokens">
+  <h2><span class="num">06</span> Estrategias para usar menos tokens</h2>
+  <p class="lead">Estas 8 técnicas son la diferencia entre una cuenta que rinde y otra que se desangra.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h4>✂️ 1. Divide las tareas</h4>
+      <p>En vez de un mega-encargo, pide <strong>fases</strong>: primero investiga, luego implementa, luego revisa. Cada fase corta se cierra antes de que el historial crezca.</p>
+    </div>
+    <div class="card">
+      <h4>🕵️ 2. Delega en subagentes</h4>
+      <p><code>explore</code> y <code>general</code> trabajan con <strong>contexto propio y fresco</strong>: leen 30 ficheros y te devuelven 5 líneas. Tu sesión principal solo recibe el resumen.</p>
+    </div>
+    <div class="card">
+      <h4>📎 3. Adjunta con @, no pegues</h4>
+      <p><code>@fichero#10-40</code> mete solo las líneas necesarias. Pegar un fichero entero en el prompt lo pagas en <strong>cada turno posterior</strong>.</p>
+    </div>
+    <div class="card">
+      <h4>🎯 4. Sé específico</h4>
+      <p>"Arregla el bug X en src/api.ts: el timeout debería ser 30s" ahorra los 3 pasos de búsqueda que costarían lecturas completas de ficheros.</p>
+    </div>
+    <div class="card">
+      <h4>🆕 5. Sesión nueva por tarea</h4>
+      <p>El historial de tareas anteriores no aporta. Cierra y arranca limpia (o retoma la vieja con <code>/sessions</code> cuando la necesites).</p>
+    </div>
+    <div class="card">
+      <h4>❓ 6. Preguntas al margen con /btw</h4>
+      <p>Dudas sobre la conversación que no quieres en el historial: se responden sin contaminar ni pesar en futuros turnos.</p>
+    </div>
+    <div class="card">
+      <h4>🧭 7. Planifica antes de construir</h4>
+      <p>Usa el agente <code>plan</code> (o <kbd>Shift+Tab</kbd>): explora y deja un plan. Los planes fallidos salen baratos; los reworkings caros.</p>
+    </div>
+    <div class="card">
+      <h4>⚙️ 8. Modelo adecuado</h4>
+      <p><code>/models</code> o <kbd>F2</kbd>: modelos ligeros para buscar/renombrar, potentes para arquitectura. También puedes asignar modelo por agente o por comando.</p>
+    </div>
+  </div>
+
+  <h3>Lo que más gasta (para que lo evites)</h3>
+  <table>
+    <thead><tr><th>Mal uso</th><th>Coste real</th><th>Alternativa</th></tr></thead>
+    <tbody>
+      <tr><td>Leer ficheros enormes de golpe</td><td>2.000 líneas / 50 KiB por página al contexto</td><td>Subagentes <code>explore</code> o <code>grep</code> dirigido</td></tr>
+      <tr><td>Repetir la explicación en cada turno</td><td>Se paga en cada request</td><td><code>AGENTS.md</code> o una skill</td></tr>
+      <tr><td>Sesiones eternas de tema mezclado</td><td>Contexto completo cada turno</td><td>Sesión nueva + <code>/sessions</code></td></tr>
+      <tr><td>Pegar salidas de build gigantes</td><td>Se arrastran hasta compactar</td><td>Pide "resume los errores clave" o usa <code>!</code> para comandos cortos</td></tr>
+      <tr><td>Microgestiones encadenadas</td><td>1 turno = 1 request mínimo</td><td>Agrupa instrucciones en un solo mensaje</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= 7 ================= -->
+<section id="compaction">
+  <h2><span class="num">07</span> Compacción: el contexto no se desborda</h2>
+  <p class="lead">Cuando la sesión se acerca al límite del modelo, OpenCode resume lo anterior y conserva los últimos ~15.000 tokens tal cual.</p>
+
+  <div class="meter"><i style="width:65%;background:linear-gradient(90deg,#7ee787,#58a6ff)"></i></div>
+  <p style="font-size:.8rem;color:var(--muted);margin-top:0">Resumen (objetivo, decisiones, hecho, pendiente) + conversación reciente exacta + trabajo en curso</p>
+
+  <ul class="tight">
+    <li><strong>Automática por defecto</strong> (<code>compaction.auto: true</code>). Puedes pedirla tú antes con la API si sabes que viene un tramo largo.</li>
+    <li><strong>El resumen está pensado para continuar:</strong> incluye objetivo, siguientes pasos, trabajo completado y ficheros relevantes. Otro agente podría retomar desde ahí.</li>
+    <li><strong>Ajuste fino:</strong> <code>keep.tokens</code> (default 15000) sube si necesitas detalle exacto reciente; <code>buffer</code> (default 15%) controla qué porcentaje de ventana dejas libre.</li>
+    <li><strong>Modelo barato para resumir:</strong> <code>agents.compaction.model</code> permite resumir con un modelo más económico que el de sesión.</li>
+    <li><strong>Después de compactar</strong> se recargan tus ficheros de instrucciones actuales como línea base.</li>
+  </ul>
+
+  <div class="callout warn">
+    <strong>⚠️ La compacción es "lossy"</strong>
+    Pierde detalle fino de lo antiguo. Si un tramo es crítico (especificación exacta), <strong>guárdalo en un fichero</strong>
+    (<code>AGENTS.md</code>, un <code>NOTES.md</code> o una skill) en vez de depender de la memoria de la sesión.
+  </div>
+</section>
+
+<!-- ================= 8 ================= -->
+<section id="subagentes">
+  <h2><span class="num">08</span> Dividir tareas para gastar menos</h2>
+  <p class="lead">Los subagentes son sesiones hijas con <strong>contexto nuevo</strong>: hacen el trabajo sucio y te devuelven solo la conclusión.</p>
+
+  <table>
+    <thead><tr><th>Subagente</th><th>Para qué</th><th>Ejemplo de petición</th></tr></thead>
+    <tbody>
+      <tr><td><code>explore</code></td><td>Buscar y leer sin editar. Devuelve rutas clave.</td><td>"Usa explore para mapear el flujo de autenticación y devuelve los ficheros clave"</td></tr>
+      <tr><td><code>general</code></td><td>Investigación o trabajo multi-paso con acceso amplio.</td><td>"Usa general para preparar un plan de migración y devolver el resumen"</td></tr>
+      <tr><td>Personalizados</td><td>Tú defines prompt, modelo y permisos en <code>.opencode/agents/</code>.</td><td>Revisor read-only, generador de tests, etc.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Por qué ahorra tokens</h3>
+  <ul class="tight">
+    <li>El hijo acumula cientos de lecturas en <strong>su</strong> contexto; el padre solo recibe un informe de ~200 tokens.</li>
+    <li>Corren <strong>en segundo plano</strong>: puedes seguir trabajando mientras investigan (pueden lanzarse en paralelo).</li>
+    <li>Suelen ir con <strong>contexto limpio</strong>: sin el resto de la conversación arrastrando.</li>
+    <li>Puedes <strong>continuar la misma conversación hija</strong> reenviando su <code>sessionID</code> si necesitas profundizar sin reabrir el tema desde cero.</li>
+  </ul>
+
+  <div class="callout tip">
+    <strong>💡 Patrón recomendado</strong>
+    <code>1)</code> Pregunta grande → "investiga con <code>explore</code> y résume" ·
+    <code>2)</code> Con el mapa, pide el plan (agente <code>plan</code>) ·
+    <code>3)</code> Implementa en tu sesión principal con instrucciones concretas ·
+    <code>4)</code> Delega la revisión a un <code>explore</code>/<code>general</code> read-only.
+  </div>
+
+  <h3>Comandos que ya ejecutan en segundo plano</h3>
+  <p>Un comando con <code>subagent: true</code> corre en una sesión hija y te devuelve el resultado sin bloquear:</p>
+<pre><code># .opencode/commands/audit.md
+---
+description: Auditoría de cambios
+agent: general
+subagent: true
+---
+Revisa $ARGUMENTS en busca de bugs y tests que falten.</code></pre>
+  <p>Úsalo como <code>/audit src/auth.ts</code> y sigue con tu trabajo.</p>
+</section>
+
+<!-- ================= 9 ================= -->
+<section id="paralelismo">
+  <h2><span class="num">09</span> Worktrees: tareas en paralelo sin pisarte</h2>
+  <p class="lead">Git worktrees = varias copias de tu repo en carpetas distintas. Cada tarea en su propio árbol, sin ramas a medias.</p>
+
+  <ul class="tight">
+    <li><strong>Crear y entrar:</strong> el agente puede crear un worktree con nombre y mover la sesión ahí (<code>worktree_create</code> → <code>session_move</code>), para que tu trabajo sucio no interrumpa a los demás.</li>
+    <li><strong>Una tarea = un worktree:</strong> mientras en uno se implementa la feature, en otro se revisa/limpiaba otro tema. Cero conflictos de <code>git status</code>.</li>
+    <li><strong>Sesiones en pestañas:</strong> abre cada trabajo en una pestaña (<kbd>Ctrl+Tab</kbd>) y alterna.</li>
+    <li><strong>Al terminar:</strong> <code>worktree_remove</code> limpia (con <code>force</code> solo si lo pides).</li>
+  </ul>
+
+  <div class="callout">
+    <strong>⚡ Patrón paralelo de 3</strong>
+    Worktree A: feature nueva · Worktree B: suite de tests con <code>general</code> en segundo plano ·
+    Tú en la sesión principal: revisión e integración. Todo a la vez, sin colisiones.
+  </div>
+</section>
+
+<!-- ================= 10 ================= -->
+<section id="comandos">
+  <h2><span class="num">10</span> Comandos slash y skills: automatiza lo repetitivo</h2>
+
+  <h3>Comandos propios (prompts guardados)</h3>
+<pre><code># .opencode/commands/review.md
+Revisa $ARGUMENTS. Primero bugs, luego tests que falten, por severidad.</code></pre>
+  <p>Se usa como <code>/review src/auth.ts</code>. Soporta <code>$1</code>, <code>$2</code>, salida de shell (<code>!\`git diff\`</code>) y puede elegir agente/modelo en el frontmatter.</p>
+
+  <h3>Skills (flujos reutilizables con material anejo)</h3>
+<pre><code>.opencode/skills/git-release/
+├── SKILL.md          ← cuándo y cómo se usa
+├── scripts/changelog.ts
+└── references/politica.md</code></pre>
+  <ul class="tight">
+    <li>El agente <strong>anuncia</strong> las skills solo cuando son relevantes y <strong>carga el cuerpo al usarla</strong>: el resto de turnos solo pagan id + descripción (pocos tokens).</li>
+    <li>Menciona <code>@skill-id</code> en tu prompt para forzar su carga.</li>
+    <li>Comparte skills por HTTP (catálogo <code>index.json</code>) o carpetas compartidas con <code>skills</code> en la config.</li>
+  </ul>
+
+  <h3>Referencias: otros repos sin copiarlos</h3>
+  <pre><code>"references": { "docs": { "path": "../product-docs", "description": "Usar para comportamiento del producto" } }</code></pre>
+  <p>Acceso con nombre a directorios fuera del proyecto (o repos Git remotos). Adjunta el alias y pide lo concreto en vez de pegar documentación entera.</p>
+</section>
+
+<!-- ================= 11 ================= -->
+<section id="deshacer">
+  <h2><span class="num">11</span> Undo, redo y snapshots</h2>
+  <p class="lead">Cada paso del modelo guarda una instantánea: puedes deshacer <strong>la conversación y los ficheros a la vez</strong>.</p>
+
+  <table>
+    <thead><tr><th>Acción</th><th>Comando</th><th>Atajo</th></tr></thead>
+    <tbody>
+      <tr><td>Deshacer último mensaje + trabajo (restaura ficheros y devuelve el prompt al editor)</td><td><code>/undo</code></td><td><kbd>Ctrl+X</kbd> <kbd>U</kbd></td></tr>
+      <tr><td>Cancelar el deshacer en espera / rehacer</td><td><code>/redo</code></td><td><kbd>Ctrl+X</kbd> <kbd>R</kbd></td></tr>
+      <tr><td>Revertir a un punto anterior del historial</td><td>Selecciona mensaje → <em>Revert</em></td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <ul class="tight">
+    <li><strong>Workflow:</strong> <code>/undo</code> → edita el prompt devuelto → lo envías = confirma el rollback; o <code>/redo</code> para cancelarlo.</li>
+    <li><strong>Requiere Git:</strong> los snapshots de ficheros solo existen dentro de un repositorio; fuera, solo se deshace la conversación.</li>
+    <li><strong>No es un backup:</strong> no revierte commits, procesos ni ficheros ignorados. Para lo importante: <code>git commit</code> antes de tirones arriesgados. Revisa con <code>git diff</code> tras restaurar.</li>
+  </ul>
+</section>
+
+<!-- ================= 12 ================= -->
+<section id="flujo">
+  <h2><span class="num">12</span> Flujo recomendado paso a paso</h2>
+  <p class="lead">La receta completa para exprimir OpenCode sin gastar de más.</p>
+
+  <div class="grid">
+    <div class="card"><h4>1️⃣ Antes</h4><p><code>AGENTS.md</code> con tus reglas · comandos/skills para lo repetitivo · <code>opencode.json</code> con modelo por defecto y permisos.</p></div>
+    <div class="card"><h4>2️⃣ Arranque</h4><p>Sesión nueva (<kbd>Ctrl+X</kbd><kbd>N</kbd>) · describe el objetivo en un mensaje completo y concreto · adjunta solo <code>@lo-necesario</code>.</p></div>
+    <div class="card"><h4>3️⃣ Exploración</h4><p>Delega búsquedas a <code>explore</code> · dudas laterales con <code>/btw</code> · no leas ficheros enteros tú.</p></div>
+    <div class="card"><h4>4️⃣ Plan</h4><p>Cambia a <code>plan</code> o pide "dame el plan antes de tocar nada". Corrige el rumbo barato con el plan en mano.</p></div>
+    <div class="card"><h4>5️⃣ Ejecución</h4><p>Implementa por fases · pilotea con <kbd>Enter</kbd> si algo se desvía · agrupa instrucciones en vez de micro-mensajes.</p></div>
+    <div class="card"><h4>6️⃣ Verificación</h4><p>Pide ejecutar los tests/lint que marca <code>AGENTS.md</code> · delega la revisión final en un subagente read-only.</p></div>
+    <div class="card"><h4>7️⃣ Cierre</h4><p><code>git commit</code> · <kbd>Ctrl+X</kbd><kbd>L</kbd> para retomar luego si queda pendiente, o sesión nueva para lo siguiente.</p></div>
+    <div class="card"><h4>🆘 Si algo sale mal</h4><p><code>/undo</code> + editar el prompt y reenviar · <code>/redo</code> si te pasaste · <code>git diff</code> para auditar el resultado.</p></div>
+  </div>
+
+  <div class="callout tip">
+    <strong>💡 Checklist rápida de ahorro</strong>
+    ✅ ¿La tarea merece sesión propia? · ✅ ¿Adjunté solo las líneas que importan? · ✅ ¿Lo repetitivo está en AGENTS.md/comandos/skills? ·
+    ✅ ¿La exploración la hace un subagente? · ✅ ¿El mensaje es concreto y agrupa todo lo que necesito?
+  </div>
+</section>
+
+<!-- ================= 13 ================= -->
+<section id="seguridad">
+  <h2><span class="num">13</span> Permisos: qué puede tocar el agente</h2>
+  <p class="lead">Reglas por acción (<code>shell</code>, <code>edit</code>, <code>read</code>, <code>subagent</code>…) con efecto <code>allow</code>, <code>ask</code> o <code>deny</code>. La última regla que coincide manda.</p>
+
+<pre><code>// opencode.jsonc
+"permissions": [
+  { "action": "shell", "resource": "*",        "effect": "ask"    },
+  { "action": "shell", "resource": "git push*", "effect": "allow" },
+  { "action": "edit",  "resource": ".env*",     "effect": "deny"  }
+]</code></pre>
+
+  <ul class="tight">
+    <li>Por defecto <code>build</code> permite mucho fuera del workspace y <strong>pide aprobación</strong> para lecturas sensibles (<code>.env</code>, etc.).</li>
+    <li>Aplica reglas a un agente concreto (p. ej. <code>explore</code> solo lectura) dentro de <code>agents.&lt;id&gt;.permissions</code>.</li>
+    <li>Los comandos con bloques <code>!\`shell\`</code> se ejecutan <strong>al evaluar el comando</strong>, fuera del flujo de permisos: solo usa comandos de fuentes de confianza.</li>
+    <li>Tras un error, <code>/permissions</code> o la paleta (<kbd>Ctrl+P</kbd>) revisan y guardan aprobaciones.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>Guía elaborada a partir de la documentación oficial de OpenCode V2 → <a href="https://opencode.ai/docs/">opencode.ai/docs</a> ·
+  Doc completa: <a href="https://opencode.ai/docs/llms.txt">llms.txt</a> · Curso recomendado: <a href="https://www.boot.dev/courses/learn-ai-coding">Boot.dev — AI Coding with OpenCode</a></p>
+  <p>Página estática sin dependencias: descárgala, súbela a un repo de GitHub y activa GitHub Pages (Settings → Pages → Deploy from branch → main → /root).</p>
+</footer>
+
+</main>
+</div>
+
+<script>
+  // Resaltar la sección visible en la barra lateral
+  const links = [...document.querySelectorAll('nav.sidebar a')];
+  const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const byId = new Map(links.map(a => [a.getAttribute('href'), a]));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = byId.get('#' + e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
